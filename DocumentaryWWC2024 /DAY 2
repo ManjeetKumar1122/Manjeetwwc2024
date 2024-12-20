@@ -1,1 +1,163 @@
+//PROBLEM 1
+Q1: Convert Sorted Array to Binary Search Tree
+Given an integer array nums where the elements are sorted in ascending order, convert it to a height-balanced binary search tree.
+//CODE
+#include <iostream>
+#include <vector>
 
+using namespace std;
+
+
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+
+TreeNode* sortedArrayToBST(vector<int>& nums, int left, int right) {
+    if (left > right) {
+        return NULL; 
+    }
+
+    int mid = left + (right - left) / 2;
+
+   
+    TreeNode* root = new TreeNode(nums[mid]);
+
+    root->left = sortedArrayToBST(nums, left, mid - 1);
+    root->right = sortedArrayToBST(nums, mid + 1, right);
+
+    return root;
+}
+
+TreeNode* sortedArrayToBST(vector<int>& nums) {
+    return sortedArrayToBST(nums, 0, nums.size() - 1);
+}
+
+void inOrderTraversal(TreeNode* root) {
+    if (root) {
+        inOrderTraversal(root->left);
+        cout << root->val << " ";
+        inOrderTraversal(root->right);
+    }
+}
+
+int main() {
+    vector<int> nums = {-10, -3, 0, 5, 9}; 
+    TreeNode* root = sortedArrayToBST(nums);
+
+    cout << "In-order traversal of the constructed BST: ";
+    inOrderTraversal(root);
+    cout << endl;
+
+    return 0;
+}
+
+//PROBLEM 2
+Q2: Valid Sudoku
+Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:
+Each row must contain the digits 1-9 without repetition. Each column must contain the digits 1-9 without repetition.Each of the nine 3 x 3 sub-boxes of the grid must contain the digits 1-9 without repetition.
+Note:A Sudoku board (partially filled) could be valid but is not necessarily solvable.
+Only the filled cells need to be validated according to the mentioned rules.
+//CODE
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+
+using namespace std;
+
+bool isValidSudoku(vector<vector<char>>& board) {
+    // Use sets to track seen numbers for rows, columns, and boxes
+    unordered_set<char> rows[9];
+    unordered_set<char> cols[9];
+    unordered_set<char> boxes[9];
+
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            char num = board[i][j];
+            if (num != '.') { // Only check filled cells
+                // Calculate the index for the 3x3 box
+                int boxIndex = (i / 3) * 3 + (j / 3);
+
+                // Check if the number is already in the current row, column, or box
+                if (rows[i].count(num) || cols[j].count(num) || boxes[boxIndex].count(num)) {
+                    return false; // Invalid if found in any of the sets
+                }
+
+                // Add the number to the corresponding sets
+                rows[i].insert(num);
+                cols[j].insert(num);
+                boxes[boxIndex].insert(num);
+            }
+        }
+    }
+    return true; // If no conflicts were found, the board is valid
+}
+
+int main() {
+    // Example Sudoku board (valid)
+    vector<vector<char>> board = {
+        {'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+        {'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+        {'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+        {'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+        {'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+        {'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+        {'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+        {'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+        {'.', '.', '.', '.', '8', '.', '.', '7', '9'}
+    };
+
+    if (isValidSudoku(board)) {
+        cout << "The Sudoku board is valid." << endl;
+    } else {
+        cout << "The Sudoku board is invalid." << endl;
+    }
+
+    return 0;
+}
+
+//PROBLEM 3
+Q3: Remove Element
+Given an integer array nums sorted in non-decreasing order, remove the duplicates in-place such that each unique element appears only once.
+The relative order of the elements should be kept the same. Then return the number of unique elements in nums..
+//CODE
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int removeDuplicates(vector<int>& nums) {
+    if (nums.empty()) {
+        return 0; // If the array is empty, return 0
+    }
+
+    int uniqueIndex = 1; // Start from the second element
+
+    for (int i = 1; i < nums.size(); i++) {
+        // If the current element is different from the previous one
+        if (nums[i] != nums[i - 1]) {
+            nums[uniqueIndex] = nums[i]; // Update the unique index
+            uniqueIndex++; // Move to the next position for unique elements
+        }
+    }
+
+    return uniqueIndex; // The number of unique elements
+}
+
+int main() {
+    vector<int> nums = {1, 1, 2, 2, 3, 4, 4, 5}; // Example input
+
+    int uniqueCount = removeDuplicates(nums);
+
+    cout << "Number of unique elements: " << uniqueCount << endl;
+    cout << "Array after removing duplicates: ";
+    for (int i = 0; i < uniqueCount; i++) {
+        cout << nums[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
