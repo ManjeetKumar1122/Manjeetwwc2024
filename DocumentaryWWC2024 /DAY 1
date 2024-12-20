@@ -1,1 +1,111 @@
+problem 1
+//Print your Whole Academic Bio data: Name, UID, Sector,AreaofInterest, Age, Last Year CGPA, Dob , HomeTown.
 
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    
+    string name, UID, sector, areaOfInterest, dob, hometown;
+    int age;
+    float lastYearCGPA;
+
+    cout << "Enter your name: ";
+    getline(cin, name);
+
+    cout << "Enter your UID: ";
+    cin >> UID;
+    cin.ignore(); 
+    cout << "Enter your sector (e.g., Computer Science): ";
+    getline(cin, sector);
+
+    cout << "Enter your area of interest: ";
+    getline(cin, areaOfInterest);
+
+    cout << "Enter your age: ";
+    cin >> age;
+
+    cout << "Enter your last year's CGPA: ";
+    cin >> lastYearCGPA;
+    cin.ignore(); 
+
+    cout << "Enter your date of birth (e.g., 15th August 2003): ";
+    getline(cin, dob);
+
+    cout << "Enter your hometown: ";
+    getline(cin, hometown);
+
+    // Display bio-data
+    cout << "\n------ Academic Bio-Data ------" << endl;
+    cout << "Name: " << name << endl;
+    cout << "UID: " << UID << endl;
+    cout << "Sector: " << sector << endl;
+    cout << "Area of Interest: " << areaOfInterest << endl;
+    cout << "Age: " << age << endl;
+    cout << "Last Year CGPA: " << lastYearCGPA << endl;
+    cout << "Date of Birth: " << dob << endl;
+    cout << "Hometown: " << hometown << endl;
+    cout << "-------------------------------" << endl;
+
+    return 0;
+}
+
+problem 2
+
+//WAP to check wHether a Number Prime or Not.
+
+#include <iostream>
+using namespace std;
+
+bool isPrime(int num) {
+    if (num <= 1) return false; 
+    for (int i = 2; i * i <= num; i++) {
+        if (num % i == 0) return false; 
+    }
+    return true; 
+}
+
+int main() {
+    int num;
+
+    cout << "Enter a number: ";
+    cin >> num;
+
+    if (isPrime(num)) {
+        cout << num << " is a prime number." << endl;
+    } else {
+        cout << num << " is not a prime number." << endl;
+    }
+
+    return 0;
+}
+
+problem 3
+
+//WAP on sum of natural numbers upto N.
+
+#include <iostream>
+using namespace std;
+
+int sumOfNaturalNumbers(int N) {
+    return (N * (N + 1)) / 2; 
+}
+
+int main() {
+    int N;
+
+
+    cout << "Enter a positive integer N: ";
+    cin >> N;
+
+    if (N <= 0) {
+        cout << "Please enter a positive integer greater than 0." << endl;
+    } else {
+      
+        int sum = sumOfNaturalNumbers(N);
+        cout << "The sum of natural numbers up to " << N << " is: " << sum << endl;
+    }
+
+    return 0;
+}
