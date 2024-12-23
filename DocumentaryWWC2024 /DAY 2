@@ -161,3 +161,238 @@ int main() {
 
     return 0;
 }
+
+//Problem 4
+Q4: Design a system in C++ that uses a linked list to simulate a real-time task scheduler for a multi-threaded operating system. Each node in the linked list represents a task, containing attributes like a unique task ID, task priority, estimated execution time, and a pointer to the next task. The linked list must dynamically adapt to new tasks being added, tasks completing, or tasks being pre-empted based on their priority. Implement functionality to insert tasks into the list in priority order (higher priority tasks come first), remove tasks upon completion, and dynamically reallocate execution slots if a higher priority task is added mid-execution. Additionally, the system should support a circular linked list to handle periodic tasks that need to re-enter the scheduling queue after a defined time interval. The implementation must ensure efficient memory usage and handle edge cases, such as managing tasks with the same priority, handling an empty task queue, and dealing with corrupted nodes. The program should output the current state of the task list, showing the order of execution and periodically updating it as tasks are added, completed, or preempted in real-time. This problem challenges your understanding of advanced linked list manipulation, dynamic memory management, and multi-threaded system simulation.
+//Code
+
+#include <iostream>
+#include <string>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+struct TaskNode {
+    int taskId;
+    int priority;
+    int executionTime; // in seconds
+    TaskNode* next;
+
+    TaskNode(int id, int prio, int time)
+        : taskId(id), priority(prio), executionTime(time), next(nullptr) {}
+};
+
+class TaskScheduler {
+private:
+    TaskNode* head; // Head of the task list
+
+public:
+    TaskScheduler() : head(nullptr) {}
+
+    // Insert task by priority
+    void insertTask(int id, int priority, int executionTime) {
+        TaskNode* newTask = new TaskNode(id, priority, executionTime);
+
+        // Empty list case
+        if (!head || head->priority < priority) {
+            newTask->next = head;
+            head = newTask;
+            return;
+        }
+
+        // Traverse to find the correct position
+        TaskNode* current = head;
+        while (current->next && current->next->priority >= priority) {
+            current = current->next;
+        }
+
+        // Insert the new task
+        newTask->next = current->next;
+        current->next = newTask;
+    }
+
+    // Complete the task at the head
+    void completeTask() {
+        if (!head) {
+            cout << "No tasks to complete.\n";
+            return;
+        }
+
+        TaskNode* temp = head;
+        head = head->next;
+
+        cout << "Task " << temp->taskId << " completed.\n";
+        delete temp;
+    }
+
+    // Print current task list
+    void displayTasks() {
+        if (!head) {
+            cout << "No tasks in the scheduler.\n";
+            return;
+        }
+
+        TaskNode* current = head;
+        cout << "Current Task List:\n";
+        while (current) {
+            cout << "Task ID: " << current->taskId
+                 << ", Priority: " << current->priority
+                 << ", Execution Time: " << current->executionTime << "s\n";
+            current = current->next;
+        }
+    }
+
+    ~TaskScheduler() {
+        while (head) {
+            completeTask();
+        }
+    }
+};
+
+int main() {
+    TaskScheduler scheduler;
+
+    scheduler.insertTask(1, 2, 5);
+    scheduler.insertTask(2, 1, 3);
+    scheduler.insertTask(3, 3, 2);
+
+    scheduler.displayTasks();
+
+    scheduler.completeTask();
+    scheduler.displayTasks();
+
+    scheduler.insertTask(4, 5, 4); // High-priority task
+    scheduler.displayTasks();
+
+    return 0;
+}
+
+//Problem 5
+Q5: Design a train reservation system in C++ using linked lists to manage bookings for multiple trains, each with several compartments. Each compartment has a fixed number of seats, and passengers can book, cancel, or check the availability of seats for specific compartments. Additionally, the system should dynamically allocate memory for new bookings and keep track of canceled seats efficiently
+//Code
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct CompartmentNode {
+    int compartmentId;
+    int seats;
+    CompartmentNode* next;
+
+    CompartmentNode(int id, int totalSeats)
+        : compartmentId(id), seats(totalSeats), next(nullptr) {}
+};
+
+struct TrainNode {
+    int trainId;
+    CompartmentNode* compartments;
+    TrainNode* next;
+
+    TrainNode(int id) : trainId(id), compartments(nullptr), next(nullptr) {}
+};
+
+class TrainReservationSystem {
+private:
+    TrainNode* head; // Head of the train list
+
+public:
+    TrainReservationSystem() : head(nullptr) {}
+
+    // Add a train
+    void addTrain(int trainId) {
+        TrainNode* newTrain = new TrainNode(trainId);
+        newTrain->next = head;
+        head = newTrain;
+    }
+
+    // Add a compartment to a train
+    void addCompartment(int trainId, int compartmentId, int seats) {
+        TrainNode* train = findTrain(trainId);
+        if (!train) {
+            cout << "Train not found.\n";
+            return;
+        }
+
+        CompartmentNode* newCompartment = new CompartmentNode(compartmentId, seats);
+        newCompartment->next = train->compartments;
+        train->compartments = newCompartment;
+    }
+
+    // Book a seat
+    void bookSeat(int trainId, int compartmentId) {
+        CompartmentNode* compartment = findCompartment(trainId, compartmentId);
+        if (!compartment) {
+            cout << "Compartment not found.\n";
+            return;
+        }
+
+        if (compartment->seats > 0) {
+            compartment->seats--;
+            cout << "Seat booked successfully.\n";
+        } else {
+            cout << "No seats available.\n";
+        }
+    }
+
+    // Cancel a booking
+    void cancelBooking(int trainId, int compartmentId) {
+        CompartmentNode* compartment = findCompartment(trainId, compartmentId);
+        if (!compartment) {
+            cout << "Compartment not found.\n";
+            return;
+        }
+
+        compartment->seats++;
+        cout << "Booking canceled successfully.\n";
+    }
+
+    // Check seat availability
+    void checkAvailability(int trainId, int compartmentId) {
+        CompartmentNode* compartment = findCompartment(trainId, compartmentId);
+        if (!compartment) {
+            cout << "Compartment not found.\n";
+            return;
+        }
+
+        cout << "Available seats: " << compartment->seats << endl;
+    }
+
+private:
+    TrainNode* findTrain(int trainId) {
+        TrainNode* current = head;
+        while (current && current->trainId != trainId) {
+            current = current->next;
+        }
+        return current;
+    }
+
+    CompartmentNode* findCompartment(int trainId, int compartmentId) {
+        TrainNode* train = findTrain(trainId);
+        if (!train) return nullptr;
+
+        CompartmentNode* compartment = train->compartments;
+        while (compartment && compartment->compartmentId != compartmentId) {
+            compartment = compartment->next;
+        }
+        return compartment;
+    }
+};
+
+int main() {
+    TrainReservationSystem system;
+
+    system.addTrain(101);
+    system.addCompartment(101, 1, 50);
+    system.addCompartment(101, 2, 30);
+
+    system.checkAvailability(101, 1);
+    system.bookSeat(101, 1);
+    system.checkAvailability(101, 1);
+
+    system.cancelBooking(101, 1);
+    system.checkAvailability(101, 1);
+
+    return 0;
+}
