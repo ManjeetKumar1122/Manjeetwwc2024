@@ -1,1 +1,332 @@
+//PROBLEM 1
+1. Fraud Detection in Banking Transactions
+A banking institution monitors transactions for potential fraud by analyzing patterns in transaction size, frequency, and geographical location. The transactions are sorted by suspiciousness score, calculated using a combination of these factors. High-risk transactions are flagged for immediate review by analysts, requiring a robust and scalable sorting mechanism to handle millions of records daily.
+//CODE
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class Transaction {
+public:
+    int id; // Unique identifier for the transaction
+    double amount; // Transaction amount
+    int frequency; // Frequency of transactions from the same account
+    std::string location; // Geographical location of the transaction
+    double suspiciousnessScore; // Calculated suspiciousness score
+
+    Transaction(int id, double amount, int frequency, const std::string& location)
+        : id(id), amount(amount), frequency(frequency), location(location) {
+        suspiciousnessScore = calculateSuspiciousnessScore();
+    }
+
+    // Function to calculate the suspiciousness score
+    double calculateSuspiciousnessScore() {
+        // Example calculation: higher amount and frequency increase the score
+        return (amount * 0.7) + (frequency * 0.3);
+    }
+};
+
+// Comparator function to sort transactions by suspiciousness score
+bool compareBySuspiciousness(const Transaction& a, const Transaction& b) {
+    return a.suspiciousnessScore > b.suspiciousnessScore; // Sort in descending order
+}
+
+int main() {
+    // Sample transactions
+    std::vector<Transaction> transactions = {
+        Transaction(1, 500.0, 5, "New York"),
+        Transaction(2, 1500.0, 2, "Los Angeles"),
+        Transaction(3, 200.0, 10, "Chicago"),
+        Transaction(4, 10000.0, 1, "Miami"),
+        Transaction(5, 300.0, 3, "Houston")
+    };
+
+    // Sort transactions by suspiciousness score
+    std::sort(transactions.begin(), transactions.end(), compareBySuspiciousness);
+
+    // Output sorted transactions
+    std::cout << "Transactions sorted by suspiciousness score:\n";
+    for (const auto& transaction : transactions) {
+        std::cout << "Transaction ID: " << transaction.id
+                  << ", Amount: " << transaction.amount
+                  << ", Frequency: " << transaction.frequency
+                  << ", Location: " << transaction.location
+                  << ", Suspiciousness Score: " << transaction.suspiciousnessScore << "\n";
+    }
+
+    return 0;
+}
+
+//PROBLEM 2
+2. Stock Market Data Analysis
+A financial technology company needs to process real-time stock market data consisting of millions of trades every minute. Each trade record includes the timestamp, stock symbol, trade price, and trade volume. To identify patterns and generate analytics, the trades must be sorted by timestamp. For deeper insights, the company also requires sorting by stock symbol and grouping by trading volume trends. Handling this large-scale data efficiently is crucial for providing timely analytics to clients.
+//CODE
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+
+class Trade {
+public:
+    std::string timestamp; // Trade timestamp
+    std::string stockSymbol; // Stock symbol
+    double tradePrice; // Trade price
+    int tradeVolume; // Trade volume
+
+    Trade(const std::string& timestamp, const std::string& stockSymbol, double tradePrice, int tradeVolume)
+        : timestamp(timestamp), stockSymbol(stockSymbol), tradePrice(tradePrice), tradeVolume(tradeVolume) {}
+};
+
+// Comparator for sorting trades by timestamp
+bool compareByTimestamp(const Trade& a, const Trade& b) {
+    return a.timestamp < b.timestamp; // Sort in ascending order
+}
+
+// Comparator for sorting trades by stock symbol
+bool compareByStockSymbol(const Trade& a, const Trade& b) {
+    return a.stockSymbol < b.stockSymbol; // Sort in ascending order
+}
+
+void printTrades(const std::vector<Trade>& trades) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Timestamp\tStock Symbol\tTrade Price\tTrade Volume\n";
+    for (const auto& trade : trades) {
+        std::cout << trade.timestamp << "\t" 
+                  << trade.stockSymbol << "\t" 
+                  << trade.tradePrice << "\t" 
+                  << trade.tradeVolume << "\n";
+    }
+}
+
+int main() {
+    // Sample trade records
+    std::vector<Trade> trades = {
+        Trade("2023-10-01 09:30:00", "AAPL", 150.00, 100),
+        Trade("2023-10-01 09:31:00", "GOOGL", 2800.00, 50),
+        Trade("2023-10-01 09:30:30", "AAPL", 151.00, 200),
+        Trade("2023-10-01 09:32:00", "MSFT", 300.00, 150),
+        Trade("2023-10-01 09:31:30", "GOOGL", 2795.00, 75),
+        Trade("2023-10-01 09:30:15", "MSFT", 299.50, 100)
+    };
+
+    // Sort trades by timestamp
+    std::sort(trades.begin(), trades.end(), compareByTimestamp);
+    std::cout << "Trades sorted by timestamp:\n";
+    printTrades(trades);
+
+    // Sort trades by stock symbol
+    std::sort(trades.begin(), trades.end(), compareByStockSymbol);
+    std::cout << "\nTrades sorted by stock symbol:\n";
+    printTrades(trades);
+
+    return 0;
+}
+
+//PROBLEM 3
+
+3. Video Streaming Platform Recommendation System
+A video streaming platform generates recommendations for users based on the popularity of movies and TV shows. Each item in the catalog has attributes like total views, user ratings, and release year. The system must sort the catalog to prioritize trending content by combining popularity and recency. Furthermore, personalized recommendations require sorting by relevance to each user's viewing history, making the sorting process dynamic and computationally intensive.
+//CODE
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+
+class Video {
+public:
+    std::string title; // Title of the video
+    int totalViews; // Total views of the video
+    double userRating; // User rating of the video (0.0 to 10.0)
+    int releaseYear; // Release year of the video
+
+    Video(const std::string& title, int totalViews, double userRating, int releaseYear)
+        : title(title), totalViews(totalViews), userRating(userRating), releaseYear(releaseYear) {}
+
+    // Calculate a score based on popularity and recency
+    double calculateScore() const {
+        // Example score calculation: (totalViews * weight1) + (userRating * weight2) + (currentYear - releaseYear) * weight3
+        const double weight1 = 0.7; // Weight for total views
+        const double weight2 = 0.2; // Weight for user rating
+        const double weight3 = 0.1; // Weight for recency
+        int currentYear = 2023; // Assume current year is 2023
+        return (totalViews * weight1) + (userRating * weight2) + ((currentYear - releaseYear) * weight3);
+    }
+};
+
+// Comparator for sorting videos by score
+bool compareByScore(const Video& a, const Video& b) {
+    return a.calculateScore() > b.calculateScore(); // Sort in descending order
+}
+
+void printVideos(const std::vector<Video>& videos) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Title\t\tTotal Views\tUser  Rating\tRelease Year\n";
+    for (const auto& video : videos) {
+        std::cout << video.title << "\t" 
+                  << video.totalViews << "\t\t" 
+                  << video.userRating << "\t\t" 
+                  << video.releaseYear << "\n";
+    }
+}
+
+int main() {
+    // Sample video catalog
+    std::vector<Video> videos = {
+        Video("Movie A", 1000000, 8.5, 2021),
+        Video("Movie B", 500000, 9.0, 2020),
+        Video("TV Show C", 2000000, 7.5, 2022),
+        Video("Movie D", 750000, 8.0, 2019),
+        Video("TV Show E", 3000000, 9.5, 2023),
+        Video("Movie F", 1500000, 6.0, 2021)
+    };
+
+    // Sort videos by score
+    std::sort(videos.begin(), videos.end(), compareByScore);
+    
+    // Output sorted videos
+    std::cout << "Videos sorted by popularity and recency:\n";
+    printVideos(videos);
+
+    return 0;
+}
+
+//PROBLEM 4
+
+4. Hospital Resource Allocation
+A hospital management system needs to sort incoming patients in the emergency department based on triage priority, severity of condition, and arrival time. The sorted list determines the order in which patients are seen by medical professionals. Additionally, during peak times, the system must dynamically adjust the sorting as new patients arrive, ensuring that life-threatening cases are prioritized while maintaining fairness.
+//CODE
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+
+class Patient {
+public:
+    int id; // Unique identifier for the patient
+    int severity; // Severity level (1 = low, 5 = critical)
+    std::string arrivalTime; // Arrival time in "YYYY-MM-DD HH:MM:SS" format
+    int triagePriority; // Triage priority (lower number = higher priority)
+
+    Patient(int id, int severity, const std::string& arrivalTime, int triagePriority)
+        : id(id), severity(severity), arrivalTime(arrivalTime), triagePriority(triagePriority) {}
+
+    // Function to calculate a sorting score based on severity and triage priority
+    double calculateScore() const {
+        // Higher severity and lower triage priority should yield a higher score
+        return severity * 10.0 - triagePriority; // Adjust weights as necessary
+    }
+};
+
+// Comparator for sorting patients
+bool comparePatients(const Patient& a, const Patient& b) {
+    // First sort by calculated score (higher is better)
+    if (a.calculateScore() != b.calculateScore()) {
+        return a.calculateScore() > b.calculateScore(); // Sort in descending order
+    }
+    // If scores are equal, sort by arrival time (earlier is better)
+    return a.arrivalTime < b.arrivalTime; // Sort in ascending order
+}
+
+void printPatients(const std::vector<Patient>& patients) {
+    std::cout << "ID\tSeverity\tArrival Time\t\tTriage Priority\n";
+    for (const auto& patient : patients) {
+        std::cout << patient.id << "\t" 
+                  << patient.severity << "\t\t" 
+                  << patient.arrivalTime << "\t" 
+                  << patient.triagePriority << "\n";
+    }
+}
+
+int main() {
+    // Sample patient records
+    std::vector<Patient> patients = {
+        Patient(1, 5, "2023-10-01 09:30:00", 1), // Critical case
+        Patient(2, 3, "2023-10-01 09:31:00", 2),
+        Patient(3, 4, "2023-10-01 09:30:30", 1),
+        Patient(4, 2, "2023-10-01 09:32:00", 3),
+        Patient(5, 1, "2023-10-01 09:31:30", 4),
+        Patient(6, 5, "2023-10-01 09:30:15", 2)  // Another critical case
+    };
+
+    // Sort patients by priority and arrival time
+    std::sort(patients.begin(), patients.end(), comparePatients);
+    
+    // Output sorted patients
+    std::cout << "Patients sorted by triage priority and arrival time:\n";
+    printPatients(patients);
+
+    return 0;
+}
+
+//PROBLEM 5
+5. Scheduling Ads for a Social Media Platform
+A social media platform runs advertisements for multiple advertisers, each targeting specific user demographics. Ads are prioritized based on factors like bid amount, engagement rates, and the remaining budget. To maximize revenue and user satisfaction, the platform must sort and schedule ads in real-time for millions of users while balancing competing priorities. Efficient sorting directly impacts ad visibility and revenue generation.
+//CODE
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <iomanip>
+
+class Ad {
+public:
+    int advertiserId; // Unique identifier for the advertiser
+    double bidAmount; // Bid amount for the ad
+    double engagementRate; // Engagement rate (0.0 to 1.0)
+    double remainingBudget; // Remaining budget for the ad campaign
+
+    Ad(int advertiserId, double bidAmount, double engagementRate, double remainingBudget)
+        : advertiserId(advertiserId), bidAmount(bidAmount), engagementRate(engagementRate), remainingBudget(remainingBudget) {}
+
+    // Calculate a score based on bid amount, engagement rate, and remaining budget
+    double calculateScore() const {
+        // Example score calculation: (bidAmount * weight1) + (engagementRate * weight2) + (remainingBudget * weight3)
+        const double weight1 = 0.5; // Weight for bid amount
+        const double weight2 = 0.3; // Weight for engagement rate
+        const double weight3 = 0.2; // Weight for remaining budget
+        return (bidAmount * weight1) + (engagementRate * weight2) + (remainingBudget * weight3);
+    }
+};
+
+// Comparator for sorting ads
+bool compareAds(const Ad& a, const Ad& b) {
+    return a.calculateScore() > b.calculateScore(); // Sort in descending order
+}
+
+void printAds(const std::vector<Ad>& ads) {
+    std::cout << "Advertiser ID\tBid Amount\tEngagement Rate\tRemaining Budget\n";
+    for (const auto& ad : ads) {
+        std::cout << ad.advertiserId << "\t\t" 
+                  << std::fixed << std::setprecision(2) << ad.bidAmount << "\t\t" 
+                  << ad.engagementRate << "\t\t" 
+                  << ad.remainingBudget << "\n";
+    }
+}
+
+int main() {
+    // Sample ad records
+    std::vector<Ad> ads = {
+        Ad(1, 100.0, 0.8, 500.0),
+        Ad(2, 150.0, 0.6, 300.0),
+        Ad(3, 200.0, 0.9, 400.0),
+        Ad(4, 120.0, 0.7, 600.0),
+        Ad(5, 180.0, 0.85, 200.0)
+    };
+
+    // Sort ads by calculated score
+    std::sort(ads.begin(), ads.end(), compareAds);
+    
+    // Output sorted ads
+    std::cout << "Ads sorted by priority:\n";
+    printAds(ads);
+
+    return 0;
+}
 
